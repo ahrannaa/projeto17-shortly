@@ -1,7 +1,6 @@
 import connection from "../database/db.js"
-import { usersSchema } from "../models/users.models.js"
+import { usersSchema, signInSchema } from "../models/users.models.js"
 import { status } from "../utils/status.js"
-import bcrypt from "bcrypt"
 
 export async function usersValidation(req, res, next) {
     const { name, email, password, confirmPassword } = req.body
@@ -18,8 +17,6 @@ export async function usersValidation(req, res, next) {
         res.status(status.BAD_REQUEST).send("senhas diferentes")
         return
     }
-      const hashPassword = bcrypt.hashSync(password,10)
-     console.log(hashPassword)
 
     const user = await connection.query("SELECT * FROM users WHERE email=$1", [email])
     if (user.rows.length != 0) {
@@ -29,3 +26,18 @@ export async function usersValidation(req, res, next) {
 
      next()
 }
+
+export async function signInValidation(req, res, next) {
+    const { email, password } = req.body
+
+    const validation = signInSchema.validate({ email, password }, { abortEarly: false })
+
+    if (validation.error) {
+        const erros = validation.error.details.map((detail) => detail.message)
+        res.status(status.UNPROCESSABLE).send(erros)
+        return
+    }
+   
+     next()
+}
+

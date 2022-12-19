@@ -4,5 +4,6 @@ export const status = {
     CONFLICT: 409,
     SERVER_ERROR: 500,
     CREATED: 201,
-    BAD_REQUEST: 400
+    BAD_REQUEST: 400,
+    UNAUTHORIZED:401
 }
