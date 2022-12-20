@@ -58,5 +58,21 @@ export async function getShortUrl(req, res) {
 
 }
 export async function deleteUrl(req, res) {
+    const { id } = req.params
+   try {
+    const url = await connection.query(`SELECT urls.id, urls."userId" FROM urls WHERE id=$1 AND "userId"=$2`, [id,res.locals.userId])
+
+    if(url.rows.length == 0){
+        res.sendStatus(401)
+        return
+    }
+     
+    await connection.query("DELETE FROM urls WHERE urls.id = $1", [id])
+    res.sendStatus(204)
+
+   } catch (err){
+    console.log(err)
+    res.sendStatus(500)
+   }
     
 }
