@@ -20,6 +20,43 @@ export async function shortUrl(req, res) {
     }
 
 }
-export async function getUrlId(req, res) {}
-export async function getShortUrl(req, res) {}
-export async function deleteUrl(req, res) {}
+export async function getUrlId(req, res) {
+    const { id } = req.params
+    try {
+        const url = await connection.query(`SELECT urls.id, urls."shortUrl", urls.url FROM urls WHERE id =$1`,[id])
+     
+        if (url.rows.length == 0){
+            res.sendStatus(404)
+            return
+        }
+
+        res.status(200).send(url.rows)
+    } catch(err) {
+        console.log(err)
+        res.sendStatus(500)
+    }
+
+}
+export async function getShortUrl(req, res) {
+    const { shortUrl } = req.params
+   try {
+    const url = await connection.query(`SELECT urls.url, urls."visitCount" FROM urls WHERE "shortUrl"=$1 `, [shortUrl])
+    console.log(url)
+   
+    if(url.rows.length == 0){
+        res.sendStatus(404)
+        return
+    }
+
+   await connection.query(`UPDATE urls SET "visitCount" = "visitCount" + 1 WHERE "shortUrl"=$1`, [shortUrl])
+   res.redirect(url.rows[0].url)
+
+   } catch(err) {
+    console.log(err)
+    res.sendStatus(500)
+   }
+
+}
+export async function deleteUrl(req, res) {
+    
+}
