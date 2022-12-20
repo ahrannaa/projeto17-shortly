@@ -26,7 +26,6 @@ export async function usersValidation(req, res, next) {
 
      next()
 }
-
 export async function signInValidation(req, res, next) {
     const { email, password } = req.body
 

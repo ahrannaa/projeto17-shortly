@@ -36,7 +36,7 @@ export async function signIn(req, res) {
     }
 
     const result = await connection.query(`SELECT * FROM sessions WHERE "userId" = $1`,[userResult.rows[0].id ])
-    if(result.rows.length == 0) {
+     if(result.rows.length == 0) {
         await connection.query(`INSERT INTO sessions( "userId", token ) VALUES ($1,$2)`, [userResult.rows[0].id, token])
         res.send(token)
         return
