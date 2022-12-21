@@ -50,4 +50,30 @@ export async function signIn(req, res) {
 
 
  }
-export async function getUsers(req, res) { }
+export async function getUsers(req, res) { 
+    try {  
+        const result = await connection.query(`SELECT users.id AS "userId", users.name, urls.id AS "ulrId", urls."shortUrl", urls.url, urls."visitCount" 
+        FROM urls JOIN users ON urls."userId" = users.id  WHERE urls."userId" = $1`, [ res.locals.userId ])
+
+        const urls = result.rows.map((url) => ({
+            id: url.ulrId,
+            shortUrl: url.shortUrl,
+            url: url.url,
+            visitCount: url.visitCount,
+        }))
+
+        const user = {
+            "id": result.rows[0].userId,
+            "name": result.rows[0].name,
+            "visitCount": 0,
+            "shortenedUrls": [urls]
+        }
+    
+        res.send(user)
+
+    } catch(err) {
+        console.log(err)
+        res.sendStatus(status.SERVER_ERROR)  
+    }
+
+ }
