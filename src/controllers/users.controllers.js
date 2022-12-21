@@ -54,7 +54,7 @@ export async function getUsers(req, res) {
     try {  
         const result = await connection.query(`SELECT users.id AS "userId", users.name, urls.id AS "ulrId", urls."shortUrl", urls.url, urls."visitCount" 
         FROM urls JOIN users ON urls."userId" = users.id  WHERE urls."userId" = $1`, [ res.locals.userId ])
-
+        
         const urls = result.rows.map((url) => ({
             id: url.ulrId,
             shortUrl: url.shortUrl,
@@ -62,10 +62,13 @@ export async function getUsers(req, res) {
             visitCount: url.visitCount,
         }))
 
+        const total = urls.reduce((acc, url) => acc + url.visitCount, 0)
+
+
         const user = {
             "id": result.rows[0].userId,
             "name": result.rows[0].name,
-            "visitCount": 0,
+            "visitCount": total,
             "shortenedUrls": [urls]
         }
     
