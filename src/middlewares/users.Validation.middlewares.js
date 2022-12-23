@@ -14,7 +14,7 @@ export async function usersValidation(req, res, next) {
     }
    
     if (password != confirmPassword){
-        res.status(status.BAD_REQUEST).send("senhas diferentes")
+        res.status(status.BAD_REQUEST).send("Senhas diferentes")
         return
     }
 

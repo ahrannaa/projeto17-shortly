@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid"
 import connection from "../database/db.js"
+import { status } from "../utils/status.js"
 
 export async function shortUrl(req, res) {
     const { url } = req.body
@@ -11,12 +12,12 @@ export async function shortUrl(req, res) {
      
        await connection.query(`INSERT INTO urls ("userId", url, "shortUrl", "visitCount") VALUES ($1,$2,$3,$4)`, [res.locals.userId, result.url, result.shortUrl, count])
        
-       res.status(201).send({ shortUrl: result.shortUrl })
+       res.status(status.CREATED).send({ shortUrl: result.shortUrl })
       
     
    } catch(err) {
         console.log(err)
-        res.sendStatus(500)
+        res.sendStatus(status.SERVER_ERROR)
     }
 
 }
@@ -26,14 +27,14 @@ export async function getUrlId(req, res) {
         const url = await connection.query(`SELECT urls.id, urls."shortUrl", urls.url FROM urls WHERE id =$1`,[id])
      
         if (url.rows.length == 0){
-            res.sendStatus(404)
+            res.sendStatus(status.NOT_FOUND)
             return
         }
 
         res.status(200).send(url.rows)
     } catch(err) {
         console.log(err)
-        res.sendStatus(500)
+        res.sendStatus(status.SERVER_ERROR)
     }
 
 }
@@ -44,7 +45,7 @@ export async function getShortUrl(req, res) {
     console.log(url)
    
     if(url.rows.length == 0){
-        res.sendStatus(404)
+        res.sendStatus(status.NOT_FOUND)
         return
     }
 
@@ -53,7 +54,7 @@ export async function getShortUrl(req, res) {
 
    } catch(err) {
     console.log(err)
-    res.sendStatus(500)
+    res.sendStatus(status.SERVER_ERROR)
    }
 
 }
@@ -63,7 +64,7 @@ export async function deleteUrl(req, res) {
     const url = await connection.query(`SELECT urls.id, urls."userId" FROM urls WHERE id=$1 AND "userId"=$2`, [id,res.locals.userId])
 
     if(url.rows.length == 0){
-        res.sendStatus(401)
+        res.sendStatus(status.UNAUTHORIZED)
         return
     }
      
@@ -72,7 +73,7 @@ export async function deleteUrl(req, res) {
 
    } catch (err){
     console.log(err)
-    res.sendStatus(500)
+    res.sendStatus(status.SERVER_ERROR)
    }
     
 }

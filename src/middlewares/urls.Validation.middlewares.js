@@ -22,7 +22,7 @@ export async function authRoutesValidation(req, res, next) {
     const token = authorization?.replace("Bearer ", "");
     
     if(!token){
-        res.sendStatus(401)
+        res.sendStatus(status.UNAUTHORIZED)
         return
     }
 
@@ -30,7 +30,7 @@ export async function authRoutesValidation(req, res, next) {
         const sessionResult = await connection.query("SELECT * FROM sessions WHERE token = $1", [token])
 
         if(sessionResult.rows.length == 0){
-            res.status(401).send("token n existe")
+            res.status(status.UNAUTHORIZED).send("Token não existe")
             return
         }
         res.locals.userId = sessionResult.rows[0].userId
@@ -38,7 +38,7 @@ export async function authRoutesValidation(req, res, next) {
 
     } catch(err) {
         console.log(err);
-        res.sendStatus(500);
+        res.sendStatus(status.SERVER_ERROR);
     }
     
 
